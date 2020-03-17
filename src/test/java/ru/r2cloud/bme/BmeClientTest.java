@@ -1,6 +1,7 @@
 package ru.r2cloud.bme;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -68,8 +69,15 @@ public class BmeClientTest {
 		assertSuccess();
 	}
 
+	@Test
+	public void testNoPackets() throws Exception {
+		client.uploadBatch(Satellite.SMOGP, Collections.emptyList());
+		assertNull(request);
+	}
+
 	@Before
 	public void start() throws Exception {
+		request = null;
 		String host = "localhost";
 		int port = 8000;
 		server = HttpServer.create(new InetSocketAddress(host, port), 0);
