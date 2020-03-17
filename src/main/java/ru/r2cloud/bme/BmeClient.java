@@ -31,12 +31,12 @@ public class BmeClient {
 	private static final String USER_AGENT = "bmeClient/1.0 (dernasherbrezon)";
 	private static final Logger LOG = LoggerFactory.getLogger(BmeClient.class);
 	private static final long TOKEN_EXPIRATION_MILLIS = Duration.ofHours(1).toMillis();
+	private static final int RETRIES = 3;
 
 	private final String host;
 	private final int port;
 	private final String username;
 	private final String password;
-	private final int retries = 3;
 	private final long retryTimeoutMillis;
 	private final int timeout;
 
@@ -63,32 +63,14 @@ public class BmeClient {
 			try {
 				refreshToken();
 
-				Builder result = HttpRequest.newBuilder().uri(URI.create(host + ":" + port + "/api/packets/bulk"));
-				result.timeout(Duration.ofMillis(timeout));
-				result.header("User-Agent", USER_AGENT);
-				result.header("Authorization", "Bearer " + authToken);
-				result.POST(BodyPublishers.ofString(convert(satellite, packets), StandardCharsets.UTF_8));
-
-				HttpRequest request = result.build();
-				HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
-				if (LOG.isDebugEnabled()) {
-					LOG.debug("response: {}", response.body());
-				}
-				if (response.statusCode() == 401) {
-					authToken = null;
-					LOG.info("token expired. retry");
+				if (!uploadBatchWithoutRetry(satellite, packets)) {
 					continue;
-				}
-
-				if (response.statusCode() != 200) {
-					// trigger retry
-					throw new IOException("invalid response code: " + response.statusCode());
 				}
 
 				break;
 
 			} catch (IOException e) {
-				if (currentRetry < retries) {
+				if (currentRetry < RETRIES) {
 					currentRetry++;
 					LOG.info("unable to upload: {} retry...{} exception {}", satellite, currentRetry, e.getMessage());
 					try {
@@ -106,6 +88,32 @@ public class BmeClient {
 				break;
 			}
 		}
+	}
+
+	private boolean uploadBatchWithoutRetry(Satellite satellite, List<byte[]> packets) throws IOException, InterruptedException {
+		Builder result = HttpRequest.newBuilder().uri(URI.create(host + ":" + port + "/api/packets/bulk"));
+		result.timeout(Duration.ofMillis(timeout));
+		result.header("User-Agent", USER_AGENT);
+		result.header("Authorization", "Bearer " + authToken);
+		result.POST(BodyPublishers.ofString(convert(satellite, packets), StandardCharsets.UTF_8));
+
+		HttpRequest request = result.build();
+		HttpResponse<String> response = httpclient.send(request, BodyHandlers.ofString());
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("response: {}", response.body());
+		}
+		if (response.statusCode() == 401) {
+			authToken = null;
+			LOG.info("token expired. retry");
+			return false;
+		}
+
+		if (response.statusCode() != 200) {
+			// trigger retry
+			throw new IOException("invalid response code: " + response.statusCode());
+		}
+
+		return true;
 	}
 
 	private static String convert(Satellite satellite, List<byte[]> packets) {
