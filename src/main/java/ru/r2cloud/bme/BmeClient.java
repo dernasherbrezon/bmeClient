@@ -37,19 +37,20 @@ public class BmeClient {
 	private final String username;
 	private final String password;
 	private final int retries = 3;
-	private final long retryTimeoutMillis = 10_000;
+	private final long retryTimeoutMillis;
 	private final int timeout;
 
 	private String authToken;
 	private HttpClient httpclient;
 	private long validUntil;
 
-	public BmeClient(String host, int port, int timeout, String username, String password) {
+	public BmeClient(String host, int port, int timeout, long retryTimeoutMillis, String username, String password) {
 		this.host = host;
 		this.port = port;
 		this.username = username;
 		this.password = password;
 		this.timeout = timeout;
+		this.retryTimeoutMillis = retryTimeoutMillis;
 		this.httpclient = HttpClient.newBuilder().version(Version.HTTP_2).followRedirects(Redirect.NORMAL).connectTimeout(Duration.ofMillis(timeout)).build();
 	}
 
@@ -75,6 +76,7 @@ public class BmeClient {
 				}
 				if (response.statusCode() == 401) {
 					authToken = null;
+					LOG.info("token expired. retry");
 					continue;
 				}
 
@@ -116,7 +118,7 @@ public class BmeClient {
 		}
 		JsonObject result = new JsonObject();
 		result.add("packets", array);
-		return result.asString();
+		return result.toString();
 	}
 
 	private void refreshToken() throws InterruptedException, IOException, AuthenticationException {
