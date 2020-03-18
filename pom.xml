@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ru.r2cloud</groupId>
 	<artifactId>bmeClient</artifactId>
-	<version>1.1-SNAPSHOT</version>
+	<version>1.1</version>
 	<url>https://github.com/dernasherbrezon/bmeClient</url>
 	<name>bmeClient</name>
 	<description>Java client for sending telemetry data to gnd.bme.hu</description>
@@ -186,7 +186,7 @@
 		<url>https://github.com/dernasherbrezon/bmeClient</url>
 		<connection>scm:git:git@github.com/dernasherbrezon/bmeClient.git</connection>
 		<developerConnection>scm:git:https://github.com/dernasherbrezon/bmeClient.git</developerConnection>
-		<tag>bmeClient-1.0</tag>
+		<tag>bmeClient-1.1</tag>
 	</scm>
 
 	<issueManagement>
