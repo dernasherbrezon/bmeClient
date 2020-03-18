@@ -28,7 +28,7 @@ import com.eclipsesource.json.JsonValue;
 public class BmeClient {
 
 	private static final int HEX_0X0F = 0x0F;
-	private static final String USER_AGENT = "bmeClient/1.0 (dernasherbrezon)";
+	private static final String USER_AGENT = "bmeClient/1.1 (dernasherbrezon)";
 	private static final Logger LOG = LoggerFactory.getLogger(BmeClient.class);
 	private static final long TOKEN_EXPIRATION_MILLIS = Duration.ofHours(1).toMillis();
 	private static final int RETRIES = 3;
@@ -104,6 +104,7 @@ public class BmeClient {
 		Builder result = HttpRequest.newBuilder().uri(URI.create(host + ":" + port + "/api/packets/bulk"));
 		result.timeout(Duration.ofMillis(timeout));
 		result.header("User-Agent", USER_AGENT);
+		result.header("Content-Type", "application/json");
 		result.header("Authorization", "Bearer " + authToken);
 		result.POST(BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8));
 
