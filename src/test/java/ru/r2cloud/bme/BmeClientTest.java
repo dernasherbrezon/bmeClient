@@ -58,6 +58,14 @@ public class BmeClientTest {
 		server.createContext("/api/packets/bulk", new SequentialHttpResponse(responses));
 		assertSuccess();
 	}
+	
+	@Test
+	public void testDoNotRetryOn400() throws Exception {
+		server.removeContext("/api/packets/bulk");
+		server.createContext("/api/packets/bulk", new HttpResponse(400, "{\"error\":\"Bad request\"}"));
+		client.uploadBatch(Satellite.SMOGP, Collections.singletonList(new byte[] { (byte) 0x01, (byte) 0xfe }));
+		assertNull(request);
+	}
 
 	@Test
 	public void testRetryOnInternalSystemError() throws Exception {
@@ -73,6 +81,16 @@ public class BmeClientTest {
 	public void testNoPackets() throws Exception {
 		client.uploadBatch(Satellite.SMOGP, Collections.emptyList());
 		assertNull(request);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testParameters() throws Exception {
+		client.uploadBatch(null, Collections.emptyList());
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testParameters2() throws Exception {
+		client.uploadBatch(Satellite.SMOGP, null);
 	}
 
 	@Before
