@@ -120,7 +120,9 @@ public class BmeClient {
 		}
 
 		if (response.statusCode() == 400) {
-			LOG.error("invalid request. response: {}", response.body());
+			if (LOG.isErrorEnabled()) {
+				LOG.error("invalid request. response: {}", response.body());
+			}
 			// do not retry
 			return true;
 		}
