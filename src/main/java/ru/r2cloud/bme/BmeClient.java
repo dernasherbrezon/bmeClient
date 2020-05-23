@@ -1,6 +1,7 @@
 package ru.r2cloud.bme;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Redirect;
@@ -16,6 +17,7 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +30,6 @@ import com.eclipsesource.json.JsonValue;
 public class BmeClient {
 
 	private static final int HEX_0X0F = 0x0F;
-	private static final String USER_AGENT = "bmeClient/1.1 (dernasherbrezon)";
 	private static final Logger LOG = LoggerFactory.getLogger(BmeClient.class);
 	private static final long TOKEN_EXPIRATION_MILLIS = Duration.ofHours(1).toMillis();
 	private static final int RETRIES = 3;
@@ -40,9 +41,19 @@ public class BmeClient {
 	private final long retryTimeoutMillis;
 	private final int timeout;
 
+	private static String USER_AGENT;
+
 	private String authToken;
 	private HttpClient httpclient;
 	private long validUntil;
+
+	static {
+		String version = readVersion();
+		if (version == null) {
+			version = "1.1";
+		}
+		USER_AGENT = "bmeClient/" + version + " (dernasherbrezon)";
+	}
 
 	public BmeClient(String host, int port, int timeout, long retryTimeoutMillis, String username, String password) {
 		this.host = host;
@@ -208,5 +219,19 @@ public class BmeClient {
 			} while (twoHalfs++ < 1);
 		}
 		return buf.toString();
+	}
+
+	private static String readVersion() {
+		try {
+			Properties p = new Properties();
+			InputStream is = BmeClient.class.getClassLoader().getResourceAsStream("/META-INF/maven/ru.r2cloud/bmeClient/pom.properties");
+			if (is != null) {
+				p.load(is);
+				return p.getProperty("version", null);
+			}
+			return null;
+		} catch (Exception e) {
+			return null;
+		}
 	}
 }
