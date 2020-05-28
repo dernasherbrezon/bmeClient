@@ -41,7 +41,7 @@ public class BmeClient {
 	private final long retryTimeoutMillis;
 	private final int timeout;
 
-	private static String USER_AGENT;
+	private static String userAgent;
 
 	private String authToken;
 	private HttpClient httpclient;
@@ -52,7 +52,7 @@ public class BmeClient {
 		if (version == null) {
 			version = "1.1";
 		}
-		USER_AGENT = "bmeClient/" + version + " (dernasherbrezon)";
+		userAgent = "bmeClient/" + version + " (dernasherbrezon)";
 	}
 
 	public BmeClient(String host, int port, int timeout, long retryTimeoutMillis, String username, String password) {
@@ -114,7 +114,7 @@ public class BmeClient {
 		}
 		Builder result = HttpRequest.newBuilder().uri(URI.create(host + ":" + port + "/api/packets/bulk"));
 		result.timeout(Duration.ofMillis(timeout));
-		result.header("User-Agent", USER_AGENT);
+		result.header("User-Agent", userAgent);
 		result.header("Content-Type", "application/json");
 		result.header("Authorization", "Bearer " + authToken);
 		result.POST(BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8));
@@ -169,7 +169,7 @@ public class BmeClient {
 		long start = System.currentTimeMillis();
 		Builder result = HttpRequest.newBuilder().uri(URI.create(host + ":" + port + "/api/tokens"));
 		result.timeout(Duration.ofMillis(timeout));
-		result.header("User-Agent", USER_AGENT);
+		result.header("User-Agent", userAgent);
 		result.header("Authorization", "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes()));
 		result.POST(BodyPublishers.noBody());
 
@@ -222,15 +222,14 @@ public class BmeClient {
 	}
 
 	private static String readVersion() {
-		try {
-			Properties p = new Properties();
-			InputStream is = BmeClient.class.getClassLoader().getResourceAsStream("/META-INF/maven/ru.r2cloud/bmeClient/pom.properties");
+		try (InputStream is = BmeClient.class.getClassLoader().getResourceAsStream("META-INF/maven/ru.r2cloud/bmeClient/pom.properties")) {
 			if (is != null) {
+				Properties p = new Properties();
 				p.load(is);
 				return p.getProperty("version", null);
 			}
 			return null;
-		} catch (Exception e) {
+		} catch (IOException e) {
 			return null;
 		}
 	}

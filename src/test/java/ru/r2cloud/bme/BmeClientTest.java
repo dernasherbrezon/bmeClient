@@ -98,6 +98,7 @@ public class BmeClientTest {
 	private void assertSuccess() throws IOException, AuthenticationException {
 		client.uploadBatch(Satellite.SMOGP, Collections.singletonList(new byte[] { (byte) 0xca, (byte) 0xfe }));
 		assertEquals("{\"packets\":[{\"satellite\":\"smogp\",\"packet\":\"cafe\"}]}", bulkHandler.getRequestBody());
+		assertEquals("bmeClient/test-1.0 (dernasherbrezon)", bulkHandler.getUserAgent());
 	}
 
 	private void setupContext(String name, HttpHandler handler) {
