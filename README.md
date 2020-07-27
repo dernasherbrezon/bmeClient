@@ -12,7 +12,7 @@ Java client for sending telemetry data to gnd.bme.hu
 <dependency>
   <groupId>ru.r2cloud</groupId>
   <artifactId>bmeClient</artifactId>
-  <version>1.1</version>
+  <version>1.3</version>
 </dependency>
 ```
 
