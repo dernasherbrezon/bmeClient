@@ -75,12 +75,19 @@ public class BmeClient {
 		if (packets.isEmpty()) {
 			return;
 		}
+		int maxBatchSize = 30;
+		for (int i = 0; i < packets.size(); i += maxBatchSize) {
+			uploadBatchWithRetry(satellite, packets, i, maxBatchSize);
+		}
+	}
+
+	private void uploadBatchWithRetry(Satellite satellite, List<byte[]> packets, int offset, int length) throws AuthenticationException, IOException {
 		int currentRetry = 0;
 		while (!Thread.currentThread().isInterrupted()) {
 			try {
 				refreshToken();
 
-				if (!uploadBatchWithoutRetry(satellite, packets)) {
+				if (!uploadBatchWithoutRetry(satellite, packets, offset, length)) {
 					continue;
 				}
 
@@ -107,8 +114,8 @@ public class BmeClient {
 		}
 	}
 
-	private boolean uploadBatchWithoutRetry(Satellite satellite, List<byte[]> packets) throws IOException, InterruptedException {
-		String requestBody = convert(satellite, packets);
+	private boolean uploadBatchWithoutRetry(Satellite satellite, List<byte[]> packets, int offset, int length) throws IOException, InterruptedException {
+		String requestBody = convert(satellite, packets, offset, length);
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("request: {}", requestBody);
 		}
@@ -146,9 +153,10 @@ public class BmeClient {
 		return true;
 	}
 
-	private static String convert(Satellite satellite, List<byte[]> packets) {
+	private static String convert(Satellite satellite, List<byte[]> packets, int offset, int length) {
 		JsonArray array = new JsonArray();
-		for (byte[] cur : packets) {
+		for (int i = offset; i < packets.size() && i < (offset + length); i++) {
+			byte[] cur = packets.get(i);
 			JsonObject curObject = new JsonObject();
 			curObject.add("satellite", satellite.name().toLowerCase(Locale.UK));
 			curObject.add("packet", convertToHex(cur));

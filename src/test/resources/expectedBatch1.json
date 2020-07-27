@@ -1,0 +1,124 @@
+{
+	"packets": [
+		{
+			"satellite": "smogp",
+			"packet": "01"
+		},
+		{
+			"satellite": "smogp",
+			"packet": "02"
+		},
+		{
+			"satellite": "smogp",
+			"packet": "03"
+		},
+		{
+			"satellite": "smogp",
+			"packet": "04"
+		},
+		{
+			"satellite": "smogp",
+			"packet": "05"
+		},
+		{
+			"satellite": "smogp",
+			"packet": "06"
+		},
+		{
+			"satellite": "smogp",
+			"packet": "07"
+		},
+		{
+			"satellite": "smogp",
+			"packet": "08"
+		},
+		{
+			"satellite": "smogp",
+			"packet": "09"
+		},
+		{
+			"satellite": "smogp",
+			"packet": "0a"
+		},
+		{
+			"satellite": "smogp",
+			"packet": "0b"
+		},
+		{
+			"satellite": "smogp",
+			"packet": "0c"
+		},
+		{
+			"satellite": "smogp",
+			"packet": "0d"
+		},
+		{
+			"satellite": "smogp",
+			"packet": "0e"
+		},
+		{
+			"satellite": "smogp",
+			"packet": "0f"
+		},
+		{
+			"satellite": "smogp",
+			"packet": "10"
+		},
+		{
+			"satellite": "smogp",
+			"packet": "11"
+		},
+		{
+			"satellite": "smogp",
+			"packet": "12"
+		},
+		{
+			"satellite": "smogp",
+			"packet": "13"
+		},
+		{
+			"satellite": "smogp",
+			"packet": "14"
+		},
+		{
+			"satellite": "smogp",
+			"packet": "15"
+		},
+		{
+			"satellite": "smogp",
+			"packet": "16"
+		},
+		{
+			"satellite": "smogp",
+			"packet": "17"
+		},
+		{
+			"satellite": "smogp",
+			"packet": "18"
+		},
+		{
+			"satellite": "smogp",
+			"packet": "19"
+		},
+		{
+			"satellite": "smogp",
+			"packet": "1a"
+		},
+		{
+			"satellite": "smogp",
+			"packet": "1b"
+		},
+		{
+			"satellite": "smogp",
+			"packet": "1c"
+		},
+		{
+			"satellite": "smogp",
+			"packet": "1d"
+		},
+		{
+			"satellite": "smogp",
+			"packet": "1e"
+		}
+	]
+}

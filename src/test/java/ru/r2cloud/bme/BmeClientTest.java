@@ -2,8 +2,12 @@ package ru.r2cloud.bme;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,6 +17,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonValue;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
@@ -83,6 +89,25 @@ public class BmeClientTest {
 		client.uploadBatch(Satellite.SMOGP, null);
 	}
 
+	@Test
+	public void testSplitBatch() throws Exception {
+		HttpResponse response1 = new HttpResponse(200, "{\"results\":[{\"location\":\"/api/packets/1234567890\"}]}");
+		HttpResponse response2 = new HttpResponse(200, "{\"results\":[{\"location\":\"/api/packets/1234567891\"}]}");
+		List<HttpResponse> responses = new ArrayList<>();
+		responses.add(response1);
+		responses.add(response2);
+		setupContext("/api/packets/bulk", new SequentialHttpResponse(responses));
+
+		List<byte[]> batch = new ArrayList<>();
+		for (int i = 0; i < 32; i++) {
+			batch.add(new byte[] { (byte) (i + 1) });
+		}
+		client.uploadBatch(Satellite.SMOGP, batch);
+
+		assertJson("expectedBatch1.json", response1.getRequestBody());
+		assertJson("expectedBatch2.json", response2.getRequestBody());
+	}
+
 	@Before
 	public void start() throws Exception {
 		String host = "localhost";
@@ -110,6 +135,15 @@ public class BmeClientTest {
 	public void stop() {
 		if (server != null) {
 			server.stop(0);
+		}
+	}
+
+	private static void assertJson(String classpath, String actual) throws Exception {
+		try (BufferedReader r = new BufferedReader(new InputStreamReader(BmeClientTest.class.getClassLoader().getResourceAsStream(classpath), StandardCharsets.UTF_8))) {
+			JsonValue expected = Json.parse(r);
+			StringWriter w = new StringWriter();
+			expected.writeTo(w);
+			assertEquals(w.toString(), actual);
 		}
 	}
 

@@ -1,0 +1,12 @@
+{
+	"packets": [
+		{
+			"satellite": "smogp",
+			"packet": "1f"
+		},
+		{
+			"satellite": "smogp",
+			"packet": "20"
+		}
+	]
+}
