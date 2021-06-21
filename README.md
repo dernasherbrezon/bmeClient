@@ -1,4 +1,4 @@
-# About [![Build Status](https://travis-ci.org/dernasherbrezon/bmeClient.svg?branch=master)](https://travis-ci.org/dernasherbrezon/bmeClient) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ru.r2cloud%3AbmeClient&metric=alert_status)](https://sonarcloud.io/dashboard?id=ru.r2cloud%3AbmeClient)
+# About [![Build Status](https://travis-ci.com/dernasherbrezon/bmeClient.svg?branch=master)](https://travis-ci.com/dernasherbrezon/bmeClient) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ru.r2cloud%3AbmeClient&metric=alert_status)](https://sonarcloud.io/dashboard?id=ru.r2cloud%3AbmeClient)
 
 Java client for sending telemetry data to gnd.bme.hu
 
